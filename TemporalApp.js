@@ -1,13 +1,8 @@
-import * as React from 'react';
+/*import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
-import MainStack from './navigation/MainStack'
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Image, TouchableOpacity, Button, TextInput } from 'react-native';
 import Svg, { Path, Defs, LinearGradient, Stop } from "react-native-svg"
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { NavigationContainer } from '@react-navigation/native';
+import { Image, TouchableOpacity, TextInput, StyleSheet, Button, Text, View } from 'react-native';
 
 // expo web: 884256678652-eetcjdolhpfhugi9996e38701oed1n79.apps.googleusercontent.com
 // android: 884256678652-r4hh05053ps31ukbrv1ilcf5868go8n9.apps.googleusercontent.com
@@ -15,7 +10,8 @@ import { NavigationContainer } from '@react-navigation/native';
 
 WebBrowser.maybeCompleteAuthSession();
 
-export default function App() {
+function LoginScreen({ navigation }) {
+
   const [accessToken, setAccessToken] = React.useState(null);
   const [user, setUser] = React.useState(null);
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
@@ -25,12 +21,13 @@ export default function App() {
   });
 
   // este ayuda para cuando el usuario inicia la aplicacion veamos si el usuario tienen una sesion o no 
-  React.useEffect(() => {
+  {/*React.useEffect(() => {
     if (response?.type === "success") {
       setAccessToken(response.authentication.accessToken);
       accessToken && fetchUserInfo();
+    }else{
     }
-  }, [response, accessToken])
+  }, [response, accessToken])*//*}
 
   async function fetchUserInfo() {
     let response = await fetch("https://www.googleapis.com/userinfo/v2/me", {
@@ -40,7 +37,7 @@ export default function App() {
     setUser(useInfo);
   }
 
-  const ShowUserInfo = () => {
+  {/*const ShowUserInfo = () => {
     if (user) {
       return (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -50,7 +47,7 @@ export default function App() {
         </View>
       )
     }
-  }
+  }*//*}
 
   const SvgFondoBlanco = (props) => (
     <Svg
@@ -67,45 +64,49 @@ export default function App() {
     </Svg>
   );
 
-  function App() {
-    return (
-      <View style={styles.mainContainer}>
-        <View style={styles.containerSVG}>
-          <SvgFondoBlanco />
-        </View>
-        <View style={styles.container}>
-          <Text style={styles.titulo}>BIENVENIDO</Text>
-          <Text style={styles.subTitulo}>Login</Text>
-          <TextInput
-            placeholder="Email"
-            style={styles.textInput}
-          />
-          <TextInput
-            placeholder="Contraseña"
-            style={styles.textInput}
-          />
-
-          {user && <ShowUserInfo />}
-          {user === null &&
-            <>
-              <TouchableOpacity
-                disabled={!request}
-                onPress={() => {
-                  promptAsync();
-                }}
-              >
-                <Image source={require("./login.png")} style={{ width: '100%', height: 50 }} />
-              </TouchableOpacity>
-            </>
-          }
-        </View>
+  return (
+    <View style={styles.mainContainer}>
+      <View style={styles.containerSVG}>
+        <SvgFondoBlanco />
       </View>
-    );
-  }
+      <View style={styles.container}>
+        <Text style={styles.titulo}>BIENVENIDO</Text>
+        <Text style={styles.subTitulo}>Login</Text>
+        <TextInput
+          placeholder="Email"
+          style={styles.textInput}
+        />
+        <TextInput
+          placeholder="Contraseña"
+          style={styles.textInput}
+        />
 
+        {/*{user && <ShowUserInfo />}*//*}
+        {user &&
+          <>
+            <Text>hola</Text>
+          </>
+        }
+        {user === null &&
+          <>
+            <TouchableOpacity
+              disabled={!request}
+              onPress={() => {
+                promptAsync();
+                {/*navigation.navigate('MainStack', {screen: 'TiendaHome'})*//* }
+              }}
+            >
+              <Image source={require("../imagenes/login.png")} style={{ width: '100%', height: 50 }} />
+            </TouchableOpacity>
+          </>
+        }
+
+      </View>
+    </View>
+  );
 }
 
-// <Image source={require("./login.png")} style={{width: 300, height: 40}} />
+export default LoginScreen;
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -115,12 +116,6 @@ const styles = StyleSheet.create({
     zIndex: 1,
     position: 'relative'
   },
-  container: {
-    marginTop: '50%',
-    zIndex: 3,
-    position: 'absolute',
-    backgroundColor: '#FFFFFF'
-  },
   containerSVG: {
     alignItems: 'flex-end',
     width: '100%',
@@ -128,6 +123,12 @@ const styles = StyleSheet.create({
     zIndex: 2,
     position: 'absolute',
     marginTop: 0
+  },
+  container: {
+    marginTop: '50%',
+    zIndex: 3,
+    position: 'absolute',
+    backgroundColor: '#FFFFFF'
   },
   titulo: {
     fontSize: 40,
@@ -153,3 +154,86 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 15
   }
 });
+
+//App
+
+import * as React from 'react';
+import MainStack from './navigation/MainStack';
+import { createDrawerNavigator } from '@react-navigation/drawer'
+import { NavigationContainer } from '@react-navigation/native';
+import LoginScreen from './screens/LoginScreen';
+import UserProvider from './contexto/usuario';
+
+// expo web: 884256678652-eetcjdolhpfhugi9996e38701oed1n79.apps.googleusercontent.com
+// android: 884256678652-r4hh05053ps31ukbrv1ilcf5868go8n9.apps.googleusercontent.com
+// web: 884256678652-4i9ba4og3chkvbkuu24s75npv1c4bhup.apps.googleusercontent.com
+
+const Drawer = createDrawerNavigator();
+
+function App() {
+
+  return (
+    <UserProvider>
+      <NavigationContainer>
+        <Drawer.Navigator
+          useLegacyImplementation
+          initialRouteName='Login'
+          screenOptions={{ headerShown: true }}
+        >
+          <Drawer.Screen name='Login' component={LoginScreen} />
+          <Drawer.Screen name="MainStack" component={MainStack} />
+        </Drawer.Navigator>
+      </NavigationContainer>
+    </UserProvider>
+  );
+
+}
+
+export default App;
+
+//<Drawer.Screen name="MainStack" component={MainStack} />
+//<Drawer.Screen name="Login" component={LoginScreen} />
+
+
+//MainStack
+import * as React from 'react';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import TiendaScreen from '../screens/TiendaScreen';
+import CarritoScreen from '../screens/CarritoScreen';
+import TiendaHomeScreen from '../screens/TiendaHomeScreen';
+import DetallePedidoScreen from '../screens/DetallePedidoScreen';
+import UserProvider, { UserContext } from '../contexto/usuario';
+import LoginScreen from '../screens/LoginScreen';
+
+// expo web: 884256678652-eetcjdolhpfhugi9996e38701oed1n79.apps.googleusercontent.com
+// android: 884256678652-r4hh05053ps31ukbrv1ilcf5868go8n9.apps.googleusercontent.com
+// web: 884256678652-4i9ba4og3chkvbkuu24s75npv1c4bhup.apps.googleusercontent.com
+
+const Stack = createNativeStackNavigator();
+
+function App() {
+
+  const { me } = React.useContext(UserContext);
+
+  return (
+    <UserProvider>
+      <Stack.Navigator initialRouteName='TiendaHome'>
+        <Stack.Screen name='Login' component={LoginScreen} />
+        <Stack.Screen name='TiendaHome' component={TiendaHomeScreen} />
+        <Stack.Screen name='Tienda' component={TiendaScreen} />
+        <Stack.Screen name='Carrito' component={CarritoScreen} />
+        <Stack.Screen name='DetallePedido' component={DetallePedidoScreen} />
+      </Stack.Navigator>
+    </UserProvider>
+  );
+}
+//<UserProvider>
+//<Stack.Navigator initialRouteName='TiendaHome'>
+//<Stack.Screen name='TiendaHome' component={TiendaHomeScreen} />
+//<Stack.Screen name='Tienda' component={TiendaScreen} />
+//<Stack.Screen name='Carrito' component={CarritoScreen} />
+//<Stack.Screen name='DetallePedido' component={DetallePedidoScreen} />
+//</Stack.Navigator>
+//</UserProvider>
+
+export default App;*/

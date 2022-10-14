@@ -20,7 +20,6 @@
     "ios": {
       "supportsTablet": true
     },
-    
     "android": {
       "package": "com.seminario2022.sofy",
       "adaptiveIcon": {
@@ -30,6 +29,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "10a8050b-cb5a-4946-a791-340feac6eedb"
+      }
     }
   }
 }

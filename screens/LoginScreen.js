@@ -1,8 +1,11 @@
-import * as React from 'react';
+import React, { useEffect, useContext, useState } from 'react';
+import UserProvider, { UserContext } from '../contexto/usuario';
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import Svg, { Path, Defs, LinearGradient, Stop } from "react-native-svg"
 import { Image, TouchableOpacity, TextInput, StyleSheet, Button, Text, View } from 'react-native';
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // expo web: 884256678652-eetcjdolhpfhugi9996e38701oed1n79.apps.googleusercontent.com
 // android: 884256678652-r4hh05053ps31ukbrv1ilcf5868go8n9.apps.googleusercontent.com
@@ -12,42 +15,28 @@ WebBrowser.maybeCompleteAuthSession();
 
 function LoginScreen({ navigation }) {
 
-  const [accessToken, setAccessToken] = React.useState(null);
-  const [user, setUser] = React.useState(null);
-  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
-    expoClientId: "884256678652-eetcjdolhpfhugi9996e38701oed1n79.apps.googleusercontent.com",
-    androidClientId: "884256678652-r4hh05053ps31ukbrv1ilcf5868go8n9.apps.googleusercontent.com",
-    webClientId: "884256678652-4i9ba4og3chkvbkuu24s75npv1c4bhup.apps.googleusercontent.com"
-  });
+  const [isSession, setIsSession] = useState(false);
+  const { setMe } = useContext(UserContext);
 
-  // este ayuda para cuando el usuario inicia la aplicacion veamos si el usuario tienen una sesion o no 
-  React.useEffect(() => {
-    if (response?.type === "success") {
-      setAccessToken(response.authentication.accessToken);
-      accessToken && fetchUserInfo();
-    }
-  }, [response, accessToken])
-
-  async function fetchUserInfo() {
-    let response = await fetch("https://www.googleapis.com/userinfo/v2/me", {
-      headers: { Authorization: `Bearer ${accessToken}` }
+  useEffect(() => {
+    GoogleSignin.configure({
+      expoClientId: "884256678652-eetcjdolhpfhugi9996e38701oed1n79.apps.googleusercontent.com",
+      androidClientId: "884256678652-r4hh05053ps31ukbrv1ilcf5868go8n9.apps.googleusercontent.com",
+      webClientId: "884256678652-4i9ba4og3chkvbkuu24s75npv1c4bhup.apps.googleusercontent.com"
     });
-    const useInfo = await response.json();
-    setUser(useInfo);
-  }
 
-  const ShowUserInfo = () => {
-    if (user) {
-      return (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={{ fontSize: 35, fontWeight: 'bold', marginBottom: 20 }}>Bienvenido</Text>
-          <Image source={{ uri: user.picture }} style={{ width: 100, height: 100, borderRadius: 50 }} />
-          <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{user.name}</Text>
-        </View>
-      )
+    getStorage();
+  }, [])
+
+  const getStorage = async () => {
+    if (await AsyncStorage.getItem('sesion')) {
+      setIsSession(true);
+    } else {
+      setIsSession(false);
     }
   }
 
+  //fondo blando de la pantalla login
   const SvgFondoBlanco = (props) => (
     <Svg
       width={350}
@@ -62,6 +51,38 @@ function LoginScreen({ navigation }) {
       />
     </Svg>
   );
+
+  //metodo de google para iniciar sesion
+  const signIn = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+
+      await AsyncStorage.setItem('sesion', JSON.stringify(userInfo.user));
+      setMe(userInfo.user);
+      setIsSession(true);
+      navigation.navigate('TiendaHome');
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        // user cancelled the login flow
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        // operation (e.g. sign in) is in progress already
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        // play services not available or outdated
+      } else {
+        // some other error happened
+      }
+    }
+  };
+
+  //metodo para cerrar la sesion
+  const closeSesion = async () => {
+    await GoogleSignin.signOut();
+    await AsyncStorage.removeItem('sesion');
+    getStorage();
+  }
+
+
 
   return (
     <View style={styles.mainContainer}>
@@ -80,32 +101,24 @@ function LoginScreen({ navigation }) {
           style={styles.textInput}
         />
 
-        {user && <ShowUserInfo />}
-        {user === null &&
-          <>
-            <TouchableOpacity
-              disabled={!request}
-              onPress={() => {
-                promptAsync();
-              }}
-            >
-              <Image source={require("../imagenes/login.png")} style={{ width: '100%', height: 50 }} />
-            </TouchableOpacity>
-          </>
-        }
+        <TouchableOpacity
+          onPress={signIn}
+        >
+          <Image source={require("../imagenes/login.png")} style={{ width: '100%', height: 50 }} />
+        </TouchableOpacity>
 
-        <Button
-          title="Go to Tienda"
-          onPress={() =>
-            navigation.navigate('MainStack', {
-              screen: 'TiendaHome',
-            })
-          }
-        />
       </View>
     </View>
   );
 }
+//<TouchableOpacity
+//onPress={() => me ? signIn: navigation.navigate('MainStack', {screen: 'TiendaHome'})}
+//>
+//<Image source={require("../imagenes/login.png")} style={{ width: '100%', height: 50 }} />
+//</TouchableOpacity>
+
+//{!isSession ? <Button title='iniciar con google' onPress={signIn} /> : null}
+//{isSession ? <Button title='cerrar' onPress={closeSesion} /> : null}
 
 export default LoginScreen;
 
@@ -143,4 +156,15 @@ const styles = StyleSheet.create({
     marginBottom: 40,
     fontWeight: 'bold'
   },
+  textInput: {
+    padding: 10,
+    paddingStart: 30,
+    borderColor: '#FDD835',
+    borderWidth: 3,
+    width: '100%',
+    height: 50,
+    marginBottom: 20,
+    borderTopLeftRadius: 15,
+    borderBottomRightRadius: 15
+  }
 });
