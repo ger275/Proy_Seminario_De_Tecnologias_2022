@@ -31,16 +31,16 @@ function TiendaHomeScreen({ navigation }) {
           </View>
         </View>
         <View style={styles.mainContainer}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('Tienda')}>
             <Image source={require("../imagenes/hogar.png")} />
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('Tienda')}>
             <Image source={require("../imagenes/abarrotes.png")} />
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('Tienda')}>
             <Image source={require("../imagenes/frutasVerduras.png")} />
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('Tienda')}>
             <Image source={require("../imagenes/limpieza.png")} />
           </TouchableOpacity>
         </View>
