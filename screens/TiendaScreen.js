@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Text, View, FlatList, ActivityIndicator } from 'react-native';
+import { Text, View, FlatList, Image, StyleSheet, Dimensions, Button, TouchableOpacity } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// expo web: 884256678652-eetcjdolhpfhugi9996e38701oed1n79.apps.googleusercontent.com
-// android: 884256678652-r4hh05053ps31ukbrv1ilcf5868go8n9.apps.googleusercontent.com
-// web: 884256678652-4i9ba4og3chkvbkuu24s75npv1c4bhup.apps.googleusercontent.com
+var { height, width } = Dimensions.get('window');
 
 function TiendaScreen({ route, navigation }) {
 
@@ -29,25 +28,77 @@ function TiendaScreen({ route, navigation }) {
     getProductos();
   }, []);
 
+  function onclickAddCart(datos) {
+    const itemCart = {
+      cantidad: 1,
+      precio: datos.precio
+    }
+
+    AsyncStorage.getItem("cart").then((datacart) => {
+      if(datacart!==null){
+        const cart = JSON.parse(datacart)
+        cart.push(datacart)
+        AsyncStorage.setItem("cart", JSON.stringify(cart))
+      }
+      else{
+        const cart = []
+        cart.push(itemCart)
+        AsyncStorage.setItem("cart", JSON.stringify(cart))
+      }
+      alert("Agregado al carrito exitosamente!!");
+    })
+      .catch((error) =>
+        alert(error))
+  }
+
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Tienda Screen</Text>
-      <Text>categoria: {JSON.stringify(categoria)}</Text>
-      <Button
-        title="Go to Cart"
-        onPress={() => navigation.navigate('Carrito')}
+    <View style={{ flex: 1, width: width, borderRadius: 20, paddingVertical: 20 }}>
+      <FlatList
+        data={data}
+        numColumns={2}
+        keyExtractor={({ id_producto }, index) => id_producto}
+        renderItem={({ item }) => (
+          <TouchableOpacity style={styles.divFood}>
+            <Image style={styles.imageFood} resizeMode="contain" source={{ uri: item.img }} />
+            <Text style={{ fontWeight: 'bold', fontSize: 22, textAlign: 'center' }}>{item.nombre}</Text>
+            <Text style={{ fontWeight: 'bold', fontSize: 20, color: 'green', textAlign: 'center' }}>Q {item.precio}</Text>
+            <TouchableOpacity style={{ width: (width / 2) - 40, backgroundColor: '#33c37d', alignItems: 'center', justifyContent: 'center', borderRadius: 5, padding: 5 }} onPress={() => onclickAddCart(item)}>
+              <Text style={{ fontSize: 18, color: 'white', fontWeight: 'bold' }}>Add cart</Text>
+            </TouchableOpacity>
+          </TouchableOpacity>
+        )}
       />
-      {isLoading ? <ActivityIndicator /> : (
-        <FlatList
-          data={data}
-          keyExtractor={({ id_producto }, index) => id_producto}
-          renderItem={({ item }) => (
-            <Text>{item.id_producto}, {item.nombre}, {item.img}</Text>
-          )}
-        />
-      )}
+      <Text></Text>
+      <Button
+        title="Go to Carrito"
+        onPress={() => navigation.navigate('Carrito', {
+          nombre: 'tortrix',
+          precio: '1.00',
+        })}
+      />
     </View>
   );
 }
 
 export default TiendaScreen;
+
+const styles = StyleSheet.create({
+  divFood: {
+    width: (width / 2) - 20,
+    backgroundColor: 'white',
+    padding: 10,
+    borderRadius: 10,
+    marginBottom: 5,
+    marginTop: 55,
+    alignItems: 'center',
+    marginLeft: 10,
+    elevation: 8,
+    shadowOpacity: 0.3,
+    shadowRadius: 50
+  },
+  imageFood: {
+    width: ((width / 2) - 20) - 10,
+    height: ((width / 2) - 20) - 30,
+    backgroundColor: 'transparent'
+  }
+});

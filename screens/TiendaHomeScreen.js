@@ -3,7 +3,7 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import * as React from 'react';
 import { TouchableOpacity, Button, Text, View, StyleSheet, ScrollView, SafeAreaView, Image } from 'react-native';
 import { UserContext } from '../contexto/usuario';
-import Svg, { Path, Defs, LinearGradient, Stop, Pattern, Use } from "react-native-svg"
+import Svg, { Path, Defs, LinearGradient, Stop, Pattern, Use } from "react-native-svg";
 
 function TiendaHomeScreen({ navigation }) {
 
@@ -23,7 +23,7 @@ function TiendaHomeScreen({ navigation }) {
         <View style={styles.encabezado}>
           <View style={styles.boton}>
             <TouchableOpacity style={styles.botonT} onPress={closeSesion}>
-              <Text style={{color: 'white'}}>CERRAR SESION</Text>
+              <Text style={{ color: 'white' }}>CERRAR SESION</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.imgEncabezado}>
@@ -31,7 +31,7 @@ function TiendaHomeScreen({ navigation }) {
           </View>
         </View>
         <View style={styles.mainContainer}>
-          <TouchableOpacity onPress={() => navigation.navigate('Tienda', { categoria: 'hogar' })}>
+          <TouchableOpacity onPress={() => navigation.navigate('Tienda', {categoria: "hogar"})}>
             <Image source={require("../imagenes/hogar.png")} />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate('Tienda', { categoria: 'abarrotes' })}>

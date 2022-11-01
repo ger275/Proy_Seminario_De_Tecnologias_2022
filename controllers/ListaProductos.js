@@ -1,7 +1,8 @@
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FlatList, Text } from 'react-native';
+import TarjetaProducto from './TarjetaProducto';
 
-export default function ListaProductos() {
+export default function ListaProductos({ categoria }) {
 
     const [isLoading, setLoading] = useState(true);
     const [data, setData] = useState([]);
@@ -24,6 +25,6 @@ export default function ListaProductos() {
     }, []);
 
     return <FlatList data={data} keyExtractor={({ id_producto }, index) => id_producto}
-        renderItem={({ item }) => <Text>{item.id_producto}</Text>}
+        renderItem={({ item }) => <TarjetaProducto {...item} />}
     />
 }
