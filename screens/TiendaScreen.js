@@ -28,27 +28,41 @@ function TiendaScreen({ route, navigation }) {
     getProductos();
   }, []);
 
-  function onclickAddCart(datos) {
+  const onclickAddCart = async (datos) => {
     const itemCart = {
       cantidad: 1,
-      precio: datos.precio
+      id_producto: datos.id_producto,
+      nombre: datos.nombre,
+      img: datos.img,
+      precio: datos.precio,
+      categoria: datos.categoria
     }
 
+    //const jsonvalue = JSON.stringify(datos)
+    //await AsyncStorage.setItem('cart', jsonvalue)
+    //alert("Agregado al carrito exitosamente!!" + datos.nombre);
+
     AsyncStorage.getItem("cart").then((datacart) => {
-      if(datacart!==null){
-        const cart = JSON.parse(datacart)
-        cart.push(datacart)
+      if (datacart !== null) {
+        let cart = []
+        cart = JSON.parse(datacart)
+        cart.push(itemCart)
         AsyncStorage.setItem("cart", JSON.stringify(cart))
       }
-      else{
+      else {
         const cart = []
         cart.push(itemCart)
         AsyncStorage.setItem("cart", JSON.stringify(cart))
       }
       alert("Agregado al carrito exitosamente!!");
     })
-      .catch((error) =>
-        alert(error))
+      .catch((error) => {
+        alert(error)
+      })
+  }
+
+  const limpiarAsynStorage = async () => {
+    AsyncStorage.clear()
   }
 
   return (
@@ -63,7 +77,7 @@ function TiendaScreen({ route, navigation }) {
             <Text style={{ fontWeight: 'bold', fontSize: 22, textAlign: 'center' }}>{item.nombre}</Text>
             <Text style={{ fontWeight: 'bold', fontSize: 20, color: 'green', textAlign: 'center' }}>Q {item.precio}</Text>
             <TouchableOpacity style={{ width: (width / 2) - 40, backgroundColor: '#33c37d', alignItems: 'center', justifyContent: 'center', borderRadius: 5, padding: 5 }} onPress={() => onclickAddCart(item)}>
-              <Text style={{ fontSize: 18, color: 'white', fontWeight: 'bold' }}>Add cart</Text>
+              <Text style={{ fontSize: 14, color: 'white', fontWeight: 'bold' }}>Añadir al carrito</Text>
             </TouchableOpacity>
           </TouchableOpacity>
         )}
@@ -76,6 +90,9 @@ function TiendaScreen({ route, navigation }) {
           precio: '1.00',
         })}
       />
+      <TouchableOpacity style={{ width: (width / 2) - 40, backgroundColor: '#33c37d', alignItems: 'center', justifyContent: 'center', borderRadius: 5, padding: 5 }} onPress={() => limpiarAsynStorage()}>
+        <Text style={{ fontSize: 18, color: 'white', fontWeight: 'bold' }}>limpiar</Text>
+      </TouchableOpacity>
     </View>
   );
 }
