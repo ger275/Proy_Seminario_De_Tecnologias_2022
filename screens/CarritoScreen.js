@@ -58,11 +58,24 @@ function CarritoScreen({ navigation }) {
     }
   }
 
+  const limpiarAsynStorage = async () => {
+    await AsyncStorage.removeItem('cart');
+    navigation.navigate('TiendaHome')
+    alert("Se vació el carrito!!")
+  }
+
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
 
-      <View style={{ height: 20 }} />
-      <Text style={{ fontSize: 28, color: 'gray', fontWeight: 'bold' }}>Cart food</Text>
+      <View style={{ width: width - 30, alignItems: 'flex-end' }}>
+        <Text></Text>
+        <TouchableOpacity style={{ width: (width / 2) - 90, backgroundColor: 'red', alignItems: 'center', justifyContent: 'center', borderRadius: 5, padding: 5 }} onPress={() => limpiarAsynStorage()}>
+          <Text style={{ fontSize: 12, color: 'white', fontWeight: 'bold' }}>Vaciar carrito</Text>
+        </TouchableOpacity>
+      </View>
+
+      
+      
       <View style={{ height: 10 }} />
 
       <View style={{ backgroundColor: 'transparent', flex: 1 }}>
@@ -78,8 +91,8 @@ function CarritoScreen({ navigation }) {
 
                   <View>
                     <Text style={{ fontSize: 20, fontWeight: 'bold ' }}>{item.nombre}</Text>
-                    <Text>Title</Text>
-                    <Text>Precio</Text>
+                    <Text></Text>
+                    <Text>Monto</Text>
                   </View>
 
                   <View style={{ backgroundColor: 'transparent', flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -112,21 +125,13 @@ function CarritoScreen({ navigation }) {
 
       <View style={{ height: 20 }} />
 
-      <TouchableOpacity style={{ backgroundColor: '#33c37d', width: width - 40, alignItems: 'center', padding: 10, borderRadius: 10 }}>
-        <Text style={{ fontSize: 24, fontWeight: 'bold', color: 'white' }}>
-          CHECKOUT
+      <TouchableOpacity style={{ backgroundColor: '#33c37d', width: width - 40, alignItems: 'center', padding: 10, borderRadius: 10 }} onPress={() => navigation.navigate('DetallePedido')}>
+        <Text style={{ fontSize: 22, fontWeight: 'bold', color: 'white' }}>
+          Ir a Finalizar pedido
         </Text>
       </TouchableOpacity>
 
       <View style={{ height: 20 }} />
-
-      <Button
-        title="Go to Detalle"
-        onPress={() => navigation.navigate('DetallePedido', {
-          nombre: 'tortrix',
-          precio: '1.00',
-        })}
-      />
 
     </View>
   );

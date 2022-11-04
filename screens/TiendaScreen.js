@@ -61,12 +61,8 @@ function TiendaScreen({ route, navigation }) {
       })
   }
 
-  const limpiarAsynStorage = async () => {
-    AsyncStorage.clear()
-  }
-
   return (
-    <View style={{ flex: 1, width: width, borderRadius: 20, paddingVertical: 20 }}>
+    <View style={{ flex: 1, width: width, borderRadius: 20, paddingVertical: 20, alignItems: 'center', alignContent: 'center' }}>
       <FlatList
         data={data}
         numColumns={2}
@@ -83,15 +79,10 @@ function TiendaScreen({ route, navigation }) {
         )}
       />
       <Text></Text>
-      <Button
-        title="Go to Carrito"
-        onPress={() => navigation.navigate('Carrito', {
-          nombre: 'tortrix',
-          precio: '1.00',
-        })}
-      />
-      <TouchableOpacity style={{ width: (width / 2) - 40, backgroundColor: '#33c37d', alignItems: 'center', justifyContent: 'center', borderRadius: 5, padding: 5 }} onPress={() => limpiarAsynStorage()}>
-        <Text style={{ fontSize: 18, color: 'white', fontWeight: 'bold' }}>limpiar</Text>
+      <TouchableOpacity style={{ backgroundColor: '#33c37d', width: width - 40, alignItems: 'center', alignContent: 'center', padding: 10, borderRadius: 10 }} onPress={() => navigation.navigate('Carrito')}>
+        <Text style={{ fontSize: 24, fontWeight: 'bold', color: 'white' }}>
+          Ir al carrito
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -101,14 +92,14 @@ export default TiendaScreen;
 
 const styles = StyleSheet.create({
   divFood: {
-    width: (width / 2) - 20,
+    width: (width / 2) - 25,
     backgroundColor: 'white',
     padding: 10,
     borderRadius: 10,
     marginBottom: 5,
     marginTop: 55,
     alignItems: 'center',
-    marginLeft: 10,
+    marginLeft: 6,
     elevation: 8,
     shadowOpacity: 0.3,
     shadowRadius: 50
