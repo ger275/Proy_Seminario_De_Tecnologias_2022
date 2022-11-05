@@ -49,9 +49,14 @@ function CarritoScreen({ navigation }) {
       setDataCart(carritotmp)
       AsyncStorage.setItem("cart", JSON.stringify(carritotmp))
       getProductos()
-    } else {
+    } else if (type == false && cantidadtmp >= 2){
       cantidadtmp = cantidadtmp - 1
       carritotmp[i].cantidad = cantidadtmp
+      setDataCart(carritotmp)
+      AsyncStorage.setItem("cart", JSON.stringify(carritotmp))
+      getProductos()
+    } else if(type == false && cantidadtmp == 1){
+      carritotmp.splice(i, 1)
       setDataCart(carritotmp)
       AsyncStorage.setItem("cart", JSON.stringify(carritotmp))
       getProductos()
@@ -74,8 +79,8 @@ function CarritoScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      
-      
+
+
       <View style={{ height: 10 }} />
 
       <View style={{ backgroundColor: 'transparent', flex: 1 }}>

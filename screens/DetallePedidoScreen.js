@@ -51,8 +51,21 @@ function DetallePedidoScreen({ navigation }) {
   /*******************************************************************************************/
 
   /*****************************************Enviar pedido a API*******************************/
+  function formatHoursTo12(date) {
+    return date.getHours() % 12 || 12;
+  }
+
   const enviarPedido = async () => {
     try {
+      let now = new Date();
+      let anio = now.getFullYear();
+      let mes = String(now.getMonth() + 1).padStart(2, '0');
+      let dia = String(now.getDate()).padStart(2, '0');
+      let hora = String(formatHoursTo12(now)).padStart(2, '0');
+      let minuto = String(now.getMinutes()).padStart(2, '0');
+      let segundo = String(now.getSeconds()).padStart(2, '0');
+      const fecha = anio + '-' + mes + '-' + dia + 'T' + hora + ':' + minuto + ':' + segundo + 'Z';
+      //alert(fecha);
       alert("Espere por favor")
       const cartTmp = dataCart
       for (var i = 0; i < cartTmp.length; i++) {
@@ -66,7 +79,7 @@ function DetallePedidoScreen({ navigation }) {
           body: JSON.stringify({
             email: me.email,
             nombre: me.name,
-            fechaHora: '2022-11-05T12:53:58Z',
+            fechaHora: fecha,
             id_producto: cartTmp[i].id_producto,
             cantidad: cartTmp[i].cantidad
           })
